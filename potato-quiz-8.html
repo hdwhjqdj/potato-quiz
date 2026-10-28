@@ -44,6 +44,10 @@
   [hidden]{display:none !important}
   button{font-family:inherit; font-size:inherit; color:inherit; border:none; background:none; cursor:pointer; touch-action:manipulation}
   .app{max-width:520px; margin:0 auto; background:transparent; min-height:100vh; min-height:100svh; position:relative; z-index:1}
+  .app::before{
+    content:"🥔"; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-18deg);
+    font-size:min(76vw,390px); line-height:1; opacity:.075; z-index:0; pointer-events:none;
+  }
   .screen{min-height:100vh; min-height:100svh; display:flex; flex-direction:column}
 
   /* ---------- 封面 ---------- */
@@ -69,9 +73,11 @@
   .kicker{font-size:11px; letter-spacing:.32em; color:var(--deep); font-weight:700; border-bottom:1px solid var(--rule); padding-bottom:10px}
   .cover-mid{flex:1; display:flex; flex-direction:column; justify-content:center; padding:24px 0}
   .cover-title{
-    font-size:44px; line-height:1.2; font-weight:900; letter-spacing:-1px; margin:16px 0 10px;
+    font-size:clamp(46px, 15.5vw, 66px); line-height:0.96; font-weight:900; letter-spacing:-4px; margin:14px 0 14px;
     background:linear-gradient(135deg, var(--deep) 0%, var(--accent) 55%, var(--accent2) 100%);
     -webkit-background-clip:text; background-clip:text; color:transparent;
+    transform:rotate(-1.6deg); transform-origin:left center;
+    filter:drop-shadow(4px 4px 0 rgba(184,121,31,.16));
   }
   .cover-sub{font-size:17px; color:var(--ink2); font-weight:600; margin:0 0 16px; font-style:italic; letter-spacing:.04em}
   .cover-desc{font-size:14px; color:var(--muted); margin:0 0 22px; max-width:400px; line-height:1.85; border-left:3px solid var(--accent); padding-left:14px}
@@ -117,8 +123,7 @@
   .qcount{display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:6px; letter-spacing:.08em}
   .qcount b{color:var(--deep); font-weight:800}
   .pbar{
-    height:8px; background:var(--tint); border-radius:99px; overflow:hidden;
-    box-shadow:inset 0 1px 2px rgba(107,74,30,.15);
+    height:14px; background:var(--tint); border:2px solid var(--ink); border-radius:0; overflow:hidden;
   }
   .pbar i{
     display:block; height:100%; width:0; border-radius:99px;
@@ -136,12 +141,14 @@
   .hint{font-size:12px; color:var(--muted); margin:0 0 26px; letter-spacing:.04em; font-style:italic}
   .opts{display:flex; flex-direction:column; gap:12px}
   .opt{
-    background:var(--card); border:1.5px solid var(--rule); border-radius:6px; padding:16px 18px;
-    text-align:left; font-size:15px; line-height:1.65; min-height:58px; display:flex; align-items:center;
+    background:var(--card); border:2.5px solid var(--ink); border-radius:0; padding:16px 18px;
+    text-align:left; font-size:15.5px; line-height:1.6; min-height:60px; display:flex; align-items:center;
     transition:border-color .16s, background .16s, transform .1s, box-shadow .16s;
-    box-shadow:0 2px 6px rgba(107,74,30,.05);
+    box-shadow:5px 5px 0 rgba(58,42,28,.16);
   }
-  .opt:active{transform:scale(.99)}
+  .opts .opt:nth-child(odd){transform:rotate(-.7deg)}
+  .opts .opt:nth-child(even){transform:rotate(.7deg)}
+  .opts .opt:active{transform:rotate(0) translate(3px,3px); box-shadow:2px 2px 0 rgba(58,42,28,.16)}
   .opt.on{
     border-color:var(--accent); background:var(--tint);
     box-shadow:0 0 0 2px rgba(184,121,31,.22), 0 4px 12px rgba(107,74,30,.12);
@@ -166,8 +173,13 @@
     box-shadow:0 0 0 4px var(--bg), 0 0 0 5px rgba(221,201,163,.8), 0 14px 40px rgba(107,74,30,.1);
   }
   .r-hero::before{content:""; position:absolute; top:6px; left:6px; right:6px; bottom:6px; border:1px solid rgba(184,121,31,.16); border-radius:5px; pointer-events:none}
-  .r-emoji{font-size:48px; line-height:1; margin-bottom:10px}
-  .r-type{font-size:28px; font-weight:900; letter-spacing:1px; margin:0 0 6px; color:var(--deep)}
+  .r-emoji{font-size:74px; line-height:1; margin-bottom:6px; filter:drop-shadow(0 6px 0 rgba(184,121,31,.16))}
+  .r-type{
+    font-size:42px; font-weight:900; letter-spacing:-2px; margin:0 0 8px; line-height:1;
+    color:var(--deep); -webkit-text-stroke:1.5px var(--ink);
+    transform:rotate(-1.4deg);
+    text-shadow:4px 4px 0 rgba(184,121,31,.2);
+  }
   .r-tagline{font-size:13px; color:var(--ink2); font-style:italic; margin:0 0 18px}
   .r-score{display:flex; justify-content:center; gap:24px; border-top:1px dashed var(--rule); padding-top:18px}
   .r-score div{text-align:center}
@@ -294,54 +306,54 @@
 
   // 前 4 题测土豆浓度（4 维各 1 题），后 4 题测自知之明（axis:"b"）
   var QUESTIONS = [
-    {dim:"starch", hint:"不用想太多，凭第一反应。",
-     text:"一个完整的周末，门没出，人没见，饭靠外卖。你的真实感受是？",
+    {dim:"starch", hint:"认真点，这题很重要。",
+     text:"如果这周末有人把你家门焊死，只留一个递外卖的小窗。",
      opts:[
-       {t:"心安理得，这叫给身体放个假", s:2},
-       {t:"还行，但到第二天下午会有点空", s:1},
-       {t:"不太行，我需要见到活人", s:0}]},
-    {dim:"sprout", hint:"计划表的下场，往往比计划本身更真实。",
-     text:"你写下的计划表，通常能活多久？",
+       {t:"太好了，这正是我理想中的户型", s:2},
+       {t:"能忍两天，但周一记得帮我拆", s:1},
+       {t:"我会打电话叫开锁师傅，然后出门见人", s:0}]},
+    {dim:"sprout", hint:"办卡那天，是你和它关系最好的一天。",
+     text:"你办的健身卡，目前最实用的功能是？",
      opts:[
-       {t:"写下的那一刻，它就已经完成了", s:2},
-       {t:"能坚持三天，之后变成书签", s:1},
-       {t:"说做就做，很少落空", s:0}]},
-    {dim:"skin", hint:"皮厚不厚，要磕一下才知道。",
-     text:"有人当众说了句让你不太舒服的话。",
+       {t:"它是我钱包里最贵的一张书签", s:2},
+       {t:"每个月去一次，主要为了洗澡", s:1},
+       {t:"一周去三次，教练都认识我家人", s:0}]},
+    {dim:"skin", hint:"饭桌上的十秒钟，能测出皮的厚度。",
+     text:"有人在饭桌上，当着十几个人的面，说了一句让你难堪的话。",
      opts:[
-       {t:"当下就过去了，晚上照样睡得着", s:2},
-       {t:"会不舒服一阵，但很快能翻篇", s:1},
-       {t:"会反复回放，甚至想好几种反驳", s:0}]},
-    {dim:"soil", hint:"相册是最诚实的日记。",
-     text:"翻你的手机相册，出现频率最高的是？",
+       {t:"我夹了一筷子菜，这件事在我这里当场结束了", s:2},
+       {t:"脸上没事，回家路上在心里排演了三套反击", s:1},
+       {t:"那一整晚我都吃不下，回家躺着反复回放", s:0}]},
+    {dim:"soil", hint:"相册是私人的出版业。",
+     text:"如果把你手机相册做成一本出版物，书名会是？",
      opts:[
-       {t:"饭菜、天空、路边的小猫", s:2},
-       {t:"各种截图，有用没用的都存着", s:1},
-       {t:"自拍，以及修过的自拍", s:0}]},
-    {axis:"b", hint:"最后一组，关于你对自己的认知。",
-     text:"有人评价你这个人很实在。",
+       {t:"一碗饭的编年史", s:2},
+       {t:"截图收藏全集", s:1},
+       {t:"我最好的那个角度", s:0}]},
+    {axis:"b", hint:"最后一组，关于你怎么看自己。",
+     text:"有人当众评价你：这人挺实在的。",
      opts:[
-       {t:"我接受，这不算坏话", s:2},
-       {t:"谢谢，但我不只是实在", s:1},
-       {t:"这话听着，像在说我无趣", s:0}]},
-    {axis:"b", hint:"深夜的自我怀疑，是一种集体经验。",
-     text:"你在深夜怀疑过自己其实很普通吗？",
+       {t:"我道谢，而且不觉得这是降级", s:2},
+       {t:"我道谢，同时希望他再多说点别的", s:1},
+       {t:"我笑了一下，回去想了很久这句话什么意思", s:0}]},
+    {axis:"b", hint:"镜子不会说话，但会提问。",
+     text:"深夜你照镜子，突然觉得自己特别普通。",
      opts:[
-       {t:"经常，而且越来越能接受这件事", s:2},
-       {t:"偶尔想过，但不太往心里去", s:1},
-       {t:"我不觉得，我挺特别的", s:0}]},
-    {axis:"b", hint:"被指出变化时，第一反应最能说明问题。",
-     text:"有人认真地跟你说：你变了。",
+       {t:"对，我就是，然后我睡着了", s:2},
+       {t:"会有一点点难受，第二天就忘了", s:1},
+       {t:"我会立刻找出三件自己很特别的事来反驳它", s:0}]},
+    {axis:"b", hint:"这句话背后通常有下一句。",
+     text:"有人很认真地跟你说：你变了。",
      opts:[
-       {t:"是吗，可能吧，人总会变", s:2},
-       {t:"看是谁说的，我会想一想", s:1},
-       {t:"心里一紧，会解释很久", s:0}]},
+       {t:"我说是啊，然后问他要不要一起吃个饭", s:2},
+       {t:"我会问，哪里变了", s:1},
+       {t:"我会紧张很久，想解释，甚至想检讨", s:0}]},
     {axis:"b", hint:"最后一题，诚实作答。",
-     text:"如果有人认真地对你说：你是一颗土豆。",
+     text:"有人很不客气地对你说：你是一颗土豆。",
      opts:[
-       {t:"那要看是哪种做法", s:2},
-       {t:"我会笑着反问，那你是什么", s:1},
-       {t:"我会有点介意", s:0}]}
+       {t:"我问他，那你觉得我适合蒸还是烤", s:2},
+       {t:"我反问他，你是什么，西红柿吗", s:1},
+       {t:"我会有点被冒犯，然后偷偷去搜土豆的营养价值", s:0}]}
   ];
 
   var TYPES = {
