@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f7eeda">
+<title>测测你是不是一颗土豆</title>
+<style>
+  :root{
+    --bg:#f7eeda;
+    --bg2:#f0e3c8;
+    --ink:#3a2a1c;
+    --ink2:#5c442c;
+    --muted:#8a7255;
+    --rule:#ddc9a3;
+    --accent:#b8791f;
+    --accent2:#d99a2b;
+    --deep:#6b4a1e;
+    --green:#6b8e4e;
+    --tint:#f2e6cd;
+    --card:#fffbf0;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{margin:0; padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:"Songti SC","Noto Serif SC","Georgia","SimSun",serif;
+    font-size:16px; line-height:1.7; -webkit-font-smoothing:antialiased;
+    overscroll-behavior-y:contain;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(600px 500px at 88% -6%, rgba(217,154,43,.16), transparent 60%),
+      radial-gradient(700px 600px at -10% 40%, rgba(107,142,78,.10), transparent 60%),
+      radial-gradient(800px 700px at 50% 112%, rgba(184,121,31,.13), transparent 60%);
+  }
+  body::after{
+    content:"🥔 ✦ 🌱 ✦ 🥔 ✦";
+    position:fixed; bottom:0; left:0; right:0; z-index:0; pointer-events:none;
+    font-size:34px; color:rgba(107,74,30,.07); letter-spacing:34px; font-weight:700;
+    overflow:hidden; white-space:nowrap;
+  }
+  [hidden]{display:none !important}
+  button{font-family:inherit; font-size:inherit; color:inherit; border:none; background:none; cursor:pointer; touch-action:manipulation}
+  .app{max-width:520px; margin:0 auto; background:transparent; min-height:100vh; min-height:100svh; position:relative; z-index:1}
+  .screen{min-height:100vh; min-height:100svh; display:flex; flex-direction:column}
+
+  /* ---------- 封面 ---------- */
+  #s-cover{padding:calc(34px + env(safe-area-inset-top)) 22px calc(26px + env(safe-area-inset-bottom)); position:relative}
+  #s-cover::before{
+    content:"🥔"; position:absolute; top:calc(42px + env(safe-area-inset-top)); left:18px;
+    font-size:22px; z-index:3; opacity:.7;
+  }
+  #s-cover::after{
+    content:"🌱"; position:absolute; top:calc(42px + env(safe-area-inset-top)); right:18px;
+    font-size:20px; z-index:3; opacity:.7;
+  }
+  #s-cover>div{
+    display:flex; flex-direction:column; flex:1; min-height:0; position:relative; z-index:2;
+    border:2px dashed var(--accent); border-radius:8px; padding:28px 20px 22px;
+    background:linear-gradient(180deg, rgba(255,251,240,.92), rgba(247,238,218,.95));
+    box-shadow:0 0 0 4px var(--bg), 0 0 0 5px rgba(221,201,163,.8), 0 18px 50px rgba(107,74,30,.12);
+  }
+  #s-cover>div::before{
+    content:""; position:absolute; top:6px; left:6px; right:6px; bottom:6px;
+    border:1px solid rgba(184,121,31,.18); border-radius:5px; pointer-events:none;
+  }
+  .kicker{font-size:11px; letter-spacing:.32em; color:var(--deep); font-weight:700; border-bottom:1px solid var(--rule); padding-bottom:10px}
+  .cover-mid{flex:1; display:flex; flex-direction:column; justify-content:center; padding:24px 0}
+  .cover-title{
+    font-size:44px; line-height:1.2; font-weight:900; letter-spacing:-1px; margin:16px 0 10px;
+    background:linear-gradient(135deg, var(--deep) 0%, var(--accent) 55%, var(--accent2) 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .cover-sub{font-size:17px; color:var(--ink2); font-weight:600; margin:0 0 16px; font-style:italic; letter-spacing:.04em}
+  .cover-desc{font-size:14px; color:var(--muted); margin:0 0 22px; max-width:400px; line-height:1.85; border-left:3px solid var(--accent); padding-left:14px}
+  .facts{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:26px}
+  .fact{
+    background:var(--card); border:1px solid var(--rule); border-radius:99px; padding:6px 14px;
+    font-size:12px; color:var(--ink2); letter-spacing:.04em;
+    box-shadow:0 2px 6px rgba(107,74,30,.06);
+  }
+  .fact b{color:var(--deep); font-weight:800}
+  .btn{display:flex; align-items:center; justify-content:center; width:100%; min-height:58px; border-radius:6px; font-size:16px; font-weight:800; letter-spacing:.12em; transition:transform .12s ease, box-shadow .2s ease; position:relative; overflow:hidden}
+  .btn:active{transform:scale(.985)}
+  .btn-primary{
+    background:linear-gradient(135deg, var(--deep) 0%, var(--accent) 55%, var(--deep) 100%);
+    color:#fff8e8; border:2px solid var(--accent2);
+    box-shadow:0 8px 24px rgba(107,74,30,.24), inset 0 1px 0 rgba(255,255,255,.22);
+  }
+  .btn-primary::before{content:"🥔 "; margin-right:4px; font-size:15px}
+  .cover-note{font-size:11px; color:var(--muted); text-align:center; margin:14px 0 0; line-height:1.8; letter-spacing:.06em; border-top:1px dashed var(--rule); padding-top:12px}
+  .deco{position:absolute; pointer-events:none; user-select:none; opacity:.55; z-index:3; font-size:18px}
+  .deco-1{top:calc(66px + env(safe-area-inset-top)); right:30px; font-size:26px; transform:rotate(14deg)}
+  .deco-2{top:132px; left:26px; font-size:16px}
+  .deco-3{bottom:168px; right:36px; font-size:22px; transform:rotate(-10deg)}
+  .deco-4{top:276px; left:46px; font-size:14px}
+  .deco-5{bottom:96px; left:36px; font-size:20px}
+  .deco-6{top:198px; right:46px; font-size:14px}
+
+  /* ---------- 答题 ---------- */
+  .qbar{
+    position:sticky; top:0; z-index:5;
+    background:rgba(247,238,218,.96); backdrop-filter:blur(8px);
+    padding:calc(12px + env(safe-area-inset-top)) 18px 10px;
+    border-bottom:2px solid var(--accent); box-shadow:0 4px 16px rgba(107,74,30,.1);
+  }
+  .qbar-row{display:flex; align-items:center; gap:12px}
+  .iconbtn{
+    width:36px; height:36px; border-radius:50%; border:1.5px solid var(--accent);
+    background:var(--card); display:flex; align-items:center; justify-content:center;
+    font-size:17px; color:var(--deep); font-weight:700;
+  }
+  .iconbtn:disabled{opacity:.3}
+  .qmeta{flex:1}
+  .qcount{display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:6px; letter-spacing:.08em}
+  .qcount b{color:var(--deep); font-weight:800}
+  .pbar{
+    height:8px; background:var(--tint); border-radius:99px; overflow:hidden;
+    box-shadow:inset 0 1px 2px rgba(107,74,30,.15);
+  }
+  .pbar i{
+    display:block; height:100%; width:0; border-radius:99px;
+    background:linear-gradient(90deg, var(--green) 0%, var(--accent2) 55%, var(--accent) 100%);
+    transition:width .32s cubic-bezier(.2,.8,.2,1);
+  }
+  .qbody{flex:1; padding:30px 22px calc(30px + env(safe-area-inset-bottom)); display:flex; flex-direction:column}
+  .qno{font-size:11px; letter-spacing:.28em; color:var(--accent); font-weight:800; margin-bottom:14px; text-transform:uppercase}
+  .qno::before{content:"🥔 "; font-size:11px}
+  .qtext{
+    font-size:21px; line-height:1.55; font-weight:700; letter-spacing:-.2px; margin:0 0 8px;
+    color:var(--ink); position:relative; padding-left:16px;
+  }
+  .qtext::before{content:""; position:absolute; left:0; top:8px; bottom:8px; width:3px; background:linear-gradient(180deg, var(--green), var(--accent)); border-radius:2px}
+  .hint{font-size:12px; color:var(--muted); margin:0 0 26px; letter-spacing:.04em; font-style:italic}
+  .opts{display:flex; flex-direction:column; gap:12px}
+  .opt{
+    background:var(--card); border:1.5px solid var(--rule); border-radius:6px; padding:16px 18px;
+    text-align:left; font-size:15px; line-height:1.65; min-height:58px; display:flex; align-items:center;
+    transition:border-color .16s, background .16s, transform .1s, box-shadow .16s;
+    box-shadow:0 2px 6px rgba(107,74,30,.05);
+  }
+  .opt:active{transform:scale(.99)}
+  .opt.on{
+    border-color:var(--accent); background:var(--tint);
+    box-shadow:0 0 0 2px rgba(184,121,31,.22), 0 4px 12px rgba(107,74,30,.12);
+  }
+  .opt .dot{width:8px; height:8px; border-radius:50%; background:var(--rule); margin-right:14px; flex:none; transition:background .16s}
+  .opt.on .dot{background:var(--accent); box-shadow:0 0 0 3px rgba(217,154,43,.28); animation:pulse 1.2s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(217,154,43,.28)} 50%{box-shadow:0 0 0 6px rgba(217,154,43,.16)}}
+  .qfoot{margin-top:auto; padding-top:22px; font-size:11px; color:var(--muted); letter-spacing:.04em}
+
+  /* ---------- 加载 ---------- */
+  #loading{position:fixed; inset:0; background:var(--bg); z-index:40; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px}
+  .spinner{width:38px; height:38px; border:3px solid var(--rule); border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #loading p{font-size:13px; color:var(--deep); letter-spacing:.12em}
+
+  /* ---------- 结果 ---------- */
+  #s-result{padding:calc(28px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom))}
+  .r-kicker{font-size:11px; letter-spacing:.32em; color:var(--accent); font-weight:700; text-align:center; margin-bottom:16px}
+  .r-hero{
+    border:2px dashed var(--accent); border-radius:8px; padding:30px 22px; text-align:center; position:relative;
+    background:linear-gradient(180deg, rgba(255,251,240,.95), rgba(247,238,218,.98));
+    box-shadow:0 0 0 4px var(--bg), 0 0 0 5px rgba(221,201,163,.8), 0 14px 40px rgba(107,74,30,.1);
+  }
+  .r-hero::before{content:""; position:absolute; top:6px; left:6px; right:6px; bottom:6px; border:1px solid rgba(184,121,31,.16); border-radius:5px; pointer-events:none}
+  .r-emoji{font-size:48px; line-height:1; margin-bottom:10px}
+  .r-type{font-size:28px; font-weight:900; letter-spacing:1px; margin:0 0 6px; color:var(--deep)}
+  .r-tagline{font-size:13px; color:var(--ink2); font-style:italic; margin:0 0 18px}
+  .r-score{display:flex; justify-content:center; gap:24px; border-top:1px dashed var(--rule); padding-top:18px}
+  .r-score div{text-align:center}
+  .r-score b{display:block; font-size:24px; color:var(--deep); font-weight:900}
+  .r-score b.big{font-size:34px; background:linear-gradient(135deg, var(--accent), var(--deep)); -webkit-background-clip:text; background-clip:text; color:transparent}
+  .r-score span{font-size:11px; color:var(--muted); letter-spacing:.08em}
+  .r-block{
+    margin-top:16px; border:1px solid var(--rule); border-radius:6px; padding:18px;
+    background:var(--card);
+    box-shadow:0 2px 8px rgba(107,74,30,.05);
+  }
+  .r-block h3{margin:0 0 10px; font-size:12px; letter-spacing:.24em; color:var(--accent); font-weight:800; text-transform:uppercase}
+  .r-block h3::before{content:"✦ "; font-size:10px}
+  .r-block p{margin:0; font-size:14.5px; line-height:1.9; color:var(--ink2)}
+  .r-quote{font-size:16px; font-style:italic; color:var(--ink); line-height:1.9}
+  .r-list{margin:0; padding:0; list-style:none}
+  .r-list li{font-size:14.5px; line-height:1.8; color:var(--ink2); padding-left:20px; position:relative; margin-bottom:8px}
+  .r-list li::before{content:"🌱"; position:absolute; left:0; top:1px; font-size:11px}
+  .r-warn{border-color:var(--accent); background:rgba(242,230,205,.6)}
+  .r-warn p{color:var(--muted); font-size:13px}
+  .r-actions{margin-top:22px; display:flex; flex-direction:column; gap:10px}
+  .btn-ghost{border:1.5px solid var(--accent); color:var(--deep); background:var(--card); border-radius:6px; min-height:50px}
+  .r-foot{margin-top:18px; text-align:center; font-size:11px; color:var(--muted); letter-spacing:.06em; line-height:1.9}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 封面 -->
+  <section id="s-cover" class="screen">
+    <div>
+      <div class="kicker">POTATO IDENTIFICATION TEST</div>
+      <div class="cover-mid">
+        <h1 class="cover-title">你是<br>一颗土豆吗</h1>
+        <p class="cover-sub">有些事，土里埋着才有答案。</p>
+        <p class="cover-desc">18 道灵魂拷问，从淀粉、芽眼、皮相、土气四个层面，测量你的土豆浓度。附带自知之明指数——毕竟，世界上最难的，是承认自己是一颗土豆。</p>
+        <div class="facts">
+          <span class="fact"><b>18</b> 道灵魂拷问</span>
+          <span class="fact">约 <b>3</b> 分钟</span>
+          <span class="fact">结果仅供娱乐</span>
+        </div>
+        <button class="btn btn-primary" id="btn-start">开始鉴定</button>
+        <p class="cover-note">本测试为娱乐向内容 · 请勿当真到影响心情<br>毕竟土豆也很好，土豆很百搭</p>
+      </div>
+    </div>
+    <span class="deco deco-1">🥔</span>
+    <span class="deco deco-2">✦</span>
+    <span class="deco deco-3">🌱</span>
+    <span class="deco deco-4">✧</span>
+    <span class="deco deco-5">🥔</span>
+    <span class="deco deco-6">✦</span>
+  </section>
+
+  <!-- 答题 -->
+  <section id="s-quiz" class="screen" hidden>
+    <div class="qbar">
+      <div class="qbar-row">
+        <button class="iconbtn" id="btn-prev" aria-label="上一题">‹</button>
+        <div class="qmeta">
+          <div class="qcount"><b id="qno">第 1 题</b><span id="qtotal">/ 18 题</span></div>
+          <div class="pbar"><i id="pfill"></i></div>
+        </div>
+      </div>
+    </div>
+    <div class="qbody">
+      <div class="qno" id="qdim">STARCH</div>
+      <h2 class="qtext" id="qtext"></h2>
+      <p class="hint" id="qhint"></p>
+      <div class="opts" id="qopts"></div>
+      <div class="qfoot">选最接近你的那个 · 别选你想成为的那个</div>
+    </div>
+  </section>
+
+  <!-- 结果 -->
+  <section id="s-result" class="screen" hidden>
+    <div class="r-kicker">IDENTIFICATION COMPLETE</div>
+    <div class="r-hero">
+      <div class="r-emoji" id="r-emoji"></div>
+      <h2 class="r-type" id="r-type"></h2>
+      <p class="r-tagline" id="r-tagline"></p>
+      <div class="r-score">
+        <div><b class="big" id="r-index">0</b><span>土豆浓度</span></div>
+        <div><b id="r-signal">0</b><span>淀粉含量</span></div>
+        <div><b id="r-base">0</b><span>自知之明</span></div>
+      </div>
+    </div>
+    <div class="r-block"><h3>鉴定结论</h3><p class="r-quote" id="r-quote"></p></div>
+    <div class="r-block"><h3>成分分析</h3><p id="r-decoding"></p></div>
+    <div class="r-block"><h3>一句实话</h3><p id="r-truth"></p></div>
+    <div class="r-block"><h3>土豆生存指南</h3><ul class="r-list" id="r-todo"></ul></div>
+    <div class="r-block r-warn"><h3>提醒</h3><p>这是一份娱乐向的鉴定报告，不具备任何营养价值，也不能作为你否定自己的证据。土豆可以是土豆泥、薯条、薯片、炖菜里的配角，也可以是整颗上锅的主角。形态不同，都能吃饱人。</p></div>
+    <div class="r-actions">
+      <button class="btn btn-primary" id="btn-share">生成分享文案</button>
+      <button class="btn btn-ghost" id="btn-quick">1 分钟速测版 · 拉朋友来验货</button>
+      <button class="btn btn-ghost" id="btn-restart">重新鉴定一次</button>
+    </div>
+    <div class="r-foot">测测你是不是一颗土豆<br>娱乐向内容 · 土豆无罪</div>
+  </section>
+
+  <!-- 加载 -->
+  <div id="loading" hidden>
+    <div class="spinner"></div>
+    <p>正在检测你的淀粉含量…</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var CONFIG = {
+    total: 18,
+    quickUrl: "potato-quiz-8.html"
+  };
+
+  // 维度：starch 淀粉 / sprout 芽眼 / skin 皮相 / soil 土气
+  var DIMS = {
+    starch:{name:"淀粉"},
+    sprout:{name:"芽眼"},
+    skin:{name:"皮相"},
+    soil:{name:"土气"}
+  };
+
+  // 前 12 题测土豆浓度（4 维 × 3 题），后 6 题测自知之明（axis:"b"）
+  var QUESTIONS = [
+    {dim:"starch", hint:"不用想太多，凭第一反应。",
+     text:"一个完整的周末，门没出，人没见，饭靠外卖。你的真实感受是？",
+     opts:[
+       {t:"心安理得，这叫给身体放个假", s:2},
+       {t:"还行，但到第二天下午会有点空", s:1},
+       {t:"不太行，我需要见到活人", s:0}]},
+    {dim:"starch", hint:"重复，是一种很高级的稳定。",
+     text:"你这三个月的外卖订单，变化幅度大概是多少？",
+     opts:[
+       {t:"同一家店同一道菜，闭着眼都能下单", s:2},
+       {t:"在两三家之间来回轮换，看心情", s:1},
+       {t:"每次都想试点没吃过的", s:0}]},
+    {dim:"starch", hint:"社交电量，出厂时就已经决定了。",
+     text:"突然被拉去一个几乎全是陌生人的局。",
+     opts:[
+       {t:"找个角落坐着，别人问一句我答一句", s:2},
+       {t:"能聊，但去之前需要做心理建设", s:1},
+       {t:"反而来劲，这种场合我擅长", s:0}]},
+    {dim:"sprout", hint:"计划表的下场，往往比计划本身更真实。",
+     text:"你写下的计划表，通常能活多久？",
+     opts:[
+       {t:"写下的那一刻，它就已经完成了", s:2},
+       {t:"能坚持三天，之后变成书签", s:1},
+       {t:"说做就做，很少落空", s:0}]},
+    {dim:"sprout", hint:"凌晨的雄心，天亮就蒸发。",
+     text:"凌晨两点，你突然觉得自己应该改变人生。然后呢？",
+     opts:[
+       {t:"想得很激动，天亮以后照常上班", s:2},
+       {t:"会真的去搜一下相关课程和资料", s:1},
+       {t:"第二天就开始动手了", s:0}]},
+    {dim:"sprout", hint:"假期的尾巴，最能看出一个人的成色。",
+     text:"长假的最后一天，你在做什么？",
+     opts:[
+       {t:"躺到最后一刻，靠意志力爬起来", s:2},
+       {t:"边收拾边懊悔，边懊悔边刷手机", s:1},
+       {t:"早就收好心了，甚至有点期待开工", s:0}]},
+    {dim:"skin", hint:"皮厚不厚，要磕一下才知道。",
+     text:"有人当众说了句让你不太舒服的话。",
+     opts:[
+       {t:"当下就过去了，晚上照样睡得着", s:2},
+       {t:"会不舒服一阵，但很快能翻篇", s:1},
+       {t:"会反复回放，甚至想好几种反驳", s:0}]},
+    {dim:"skin", hint:"接受夸奖的能力，是一种稀缺资源。",
+     text:"别人是真心夸你的时候，你的第一反应是？",
+     opts:[
+       {t:"接着，说声谢谢就过去了", s:2},
+       {t:"嘴上说没有啦，心里偷偷高兴很久", s:1},
+       {t:"先怀疑一下，他是不是有事求我", s:0}]},
+    {dim:"skin", hint:"群里的沉默，是一面照妖镜。",
+     text:"你在群里发了一句话，没人接。",
+     opts:[
+       {t:"没多想，该干嘛干嘛去了", s:2},
+       {t:"会看一眼，然后自己找个台阶下", s:1},
+       {t:"会想是不是说错了什么，甚至想撤回", s:0}]},
+    {dim:"soil", hint:"相册是最诚实的日记。",
+     text:"翻你的手机相册，出现频率最高的是？",
+     opts:[
+       {t:"饭菜、天空、路边的小猫", s:2},
+       {t:"各种截图，有用没用的都存着", s:1},
+       {t:"自拍，以及修过的自拍", s:0}]},
+    {dim:"soil", hint:"仪式感，是一种需要消耗的奢侈品。",
+     text:"对于节日和纪念日这类仪式感。",
+     opts:[
+       {t:"能记住就不错了，形式不重要", s:2},
+       {t:"该有的还是要有，但不折腾", s:1},
+       {t:"会认真准备，甚至提前一个月", s:0}]},
+    {dim:"soil", hint:"快乐的来源，决定了你扎在多深的土里。",
+     text:"你最近的快乐，主要来自哪里？",
+     opts:[
+       {t:"吃顿好的，睡个够", s:2},
+       {t:"终于完成了一件拖了很久的事", s:1},
+       {t:"被人看见，被人认可", s:0}]},
+    {axis:"b", hint:"最后一组，关于你对自己的认知。",
+     text:"有人评价你这个人很实在。",
+     opts:[
+       {t:"我接受，这不算坏话", s:2},
+       {t:"谢谢，但我不只是实在", s:1},
+       {t:"这话听着，像在说我无趣", s:0}]},
+    {axis:"b", hint:"深夜的自我怀疑，是一种集体经验。",
+     text:"你在深夜怀疑过自己其实很普通吗？",
+     opts:[
+       {t:"经常，而且越来越能接受这件事", s:2},
+       {t:"偶尔想过，但不太往心里去", s:1},
+       {t:"我不觉得，我挺特别的", s:0}]},
+    {axis:"b", hint:"朋友圈是一个人最用心的作品。",
+     text:"你朋友圈呈现出来的那个人，和真实的你？",
+     opts:[
+       {t:"基本一致，懒得经营", s:2},
+       {t:"美化了一点点，人之常情", s:1},
+       {t:"完全是另一个人，那是我想要的样子", s:0}]},
+    {axis:"b", hint:"被指出变化时，第一反应最能说明问题。",
+     text:"有人认真地跟你说：你变了。",
+     opts:[
+       {t:"是吗，可能吧，人总会变", s:2},
+       {t:"看是谁说的，我会想一想", s:1},
+       {t:"心里一紧，会解释很久", s:0}]},
+    {axis:"b", hint:"形容词的选择，暴露了想要的东西。",
+     text:"你更愿意被别人形容为？",
+     opts:[
+       {t:"可靠", s:2},
+       {t:"有意思", s:1},
+       {t:"耀眼", s:0}]},
+    {axis:"b", hint:"最后一题，诚实作答。",
+     text:"如果有人认真地对你说：你是一颗土豆。",
+     opts:[
+       {t:"那要看是哪种做法", s:2},
+       {t:"我会笑着反问，那你是什么", s:1},
+       {t:"我会有点介意", s:0}]}
+  ];
+
+  var TYPES = {
+    mian:{
+      name:"整颗面土豆", emoji:"🥔",
+      tagline:"不削皮，不切块，整颗上锅。",
+      quote:"百分之百的土豆，并且大大方方地承认了。",
+      decoding:"淀粉含量极高，芽眼沉睡，皮厚而完整，土气十足——你是一颗从里到外都不打算伪装的土豆。你不追热搜，不经营人设，情绪来得慢但走得也慢，答应的事一般都会做到。你的稳定不是麻木，是一种把根扎进土里的能力。身边的人未必天天想起你，但关键时刻总会先想到你。",
+      truth:"唯一的隐患是：太稳的人容易被当成背景，也容易把自己活成背景。你不需要变成薯片那样响亮，但偶尔也该让人知道，这颗土豆是会热的。",
+      todo:["试一次不提前计划的小出走，哪怕只是换条路回家","把你的稳定说出来，别让付出永远沉默","偶尔做一道主角菜，不是配菜"],
+      fit:"整颗上锅的土豆，最不容易被吃掉，也最容易被人记住那股香气。"
+    },
+    sprout:{
+      name:"发芽土豆", emoji:"🌱",
+      tagline:"表面摆烂，内里翻涌。",
+      quote:"明明是土豆，却坚持说自己是别的什么。",
+      decoding:"你的淀粉浓度高得惊人，芽眼却已经开始蠢蠢欲动——计划表活不过三天，凌晨两点雄心万丈，天亮之后照常打卡。你嘴上说着算了算了，心里从没真的认输过。这种矛盾不是你懒，是你在用最低的姿态保护最高的期待，怕全力以赴之后仍然不行。",
+      truth:"发芽的土豆是有毒的，但也是唯一能长出下一株的。你现在缺的不是动力，是一次不管结果、先动手的体验，哪怕只做三天。",
+      todo:["挑一件小得可笑的计划，真的做完它，重建一次对自己的信任","把凌晨两点的想法写在纸上，第二天读一遍，选出最不荒唐的一个","别再用摆烂保护自己，试着裸奔一次"],
+      fit:"发芽不是坏掉，是它在拼命想活。别急着把自己扔掉。"
+    },
+    mud:{
+      name:"土豆泥", emoji:"🥣",
+      tagline:"被生活反复碾压，结果变得非常顺滑。",
+      quote:"明明是土豆，却被打成了另一个形状，还接受了这个形状。",
+      decoding:"你的淀粉不算多，但自知之明高得少见。你很早就不再和世界较劲了：场面话会接，气氛会暖，别人需要什么形状，你就能变成什么形状。这是极高的社会适应力，也是一种很累的温柔。你太擅长配合，以至于有时分不清哪个是你想要的，哪个是别人期待的。",
+      truth:"土豆泥很好吃，但没人会问土豆泥自己想变成什么。你最大的风险不是不被喜欢，是被喜欢得太容易，从而忘了自己也能拒绝。",
+      todo:["这周挑一件不解释、不配合、不让步的小事","记下三次你说行但其实想说不行的时候","试着让一个人看见你没那么顺滑的一面"],
+      fit:"顺滑是一种能力，但保留一点颗粒感，才尝得出你是谁。"
+    },
+    fries:{
+      name:"脆薯条", emoji:"🍟",
+      tagline:"被切成条，还炸得金黄。",
+      quote:"淀粉一般，却坚决不承认自己是土豆。",
+      decoding:"你的淀粉浓度不高，自知之明也不高——但这不是缺点，这是被加工过的痕迹。你被生活切成了条，扔进油里，出来时金黄酥脆：看着很精神，其实内里软得一塌糊涂。你在意别人的目光，经营朋友圈里的自己，被说一句你变了会紧张很久。你不是不实在，你只是太想被喜欢。",
+      truth:"薯条最大的问题是，凉了就不好吃了。靠外部认可维持的热度，撑不了太久。你不需要变得更脆，你需要学会在没人看的时候也觉得自己还不错。",
+      todo:["发一条完全不修图、不配文的朋友圈，观察自己的心跳","把在乎的人从一百个减到三个，认真对他们","每天写一条只有自己知道的、今天做得还行的事"],
+      fit:"薯条很好，但薯条的价值不该由蘸什么酱来决定。"
+    }
+  };
+
+  // ---------- 状态 ----------
+  var idx = 0;
+  var answers = new Array(CONFIG.total).fill(null);
+
+  // ---------- DOM ----------
+  var $ = function(id){ return document.getElementById(id); };
+  var coverEl = $("s-cover"), quizEl = $("s-quiz"), resultEl = $("s-result"), loadingEl = $("loading");
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var t = a[i]; a[i]=a[j]; a[j]=t;
+    }
+    return a;
+  }
+
+  function renderQ(){
+    var q = QUESTIONS[idx];
+    var dimName = q.dim ? DIMS[q.dim].name : "自知之明";
+    $("qdim").textContent = (q.dim ? "STARCH LEVEL · " : "SELF AWARE · ") + dimName;
+    $("qno").textContent = "第 " + (idx+1) + " 题";
+    $("qtotal").textContent = "/ " + CONFIG.total + " 题";
+    $("pfill").style.width = (idx / CONFIG.total * 100) + "%";
+    $("qtext").textContent = q.text;
+    $("qhint").textContent = q.hint;
+    $("btn-prev").disabled = (idx === 0);
+
+    var box = $("qopts");
+    box.innerHTML = "";
+    var opts = shuffle(q.opts);
+    opts.forEach(function(o){
+      var b = document.createElement("button");
+      b.className = "opt" + (answers[idx] === o.s ? " on" : "");
+      b.innerHTML = '<span class="dot"></span><span>' + o.t + '</span>';
+      b.onclick = function(){
+        answers[idx] = o.s;
+        var all = box.querySelectorAll(".opt");
+        for(var k=0;k<all.length;k++) all[k].classList.remove("on");
+        b.classList.add("on");
+        setTimeout(function(){
+          if(idx < CONFIG.total-1){ idx++; renderQ(); window.scrollTo(0,0); }
+          else{ finish(); }
+        }, 260);
+      };
+      box.appendChild(b);
+    });
+  }
+
+  function calc(){
+    var coreRaw = 0, selfRaw = 0, i;
+    for(i=0;i<12;i++) coreRaw += answers[i];
+    for(i=12;i<18;i++) selfRaw += answers[i];
+    var core = Math.round(coreRaw / 24 * 100);
+    var self = Math.round(selfRaw / 12 * 100);
+    var index = Math.round(core * 0.65 + self * 0.35);
+    var key;
+    var coreHigh = core >= 50, selfHigh = self >= 50;
+    if(coreHigh && selfHigh) key = "mian";
+    else if(coreHigh && !selfHigh) key = "sprout";
+    else if(!coreHigh && selfHigh) key = "mud";
+    else key = "fries";
+    return {core:core, self:self, index:index, key:key};
+  }
+
+  function renderResult(){
+    var r = calc();
+    var t = TYPES[r.key];
+    $("r-emoji").textContent = t.emoji;
+    $("r-type").textContent = t.name;
+    $("r-tagline").textContent = t.tagline;
+    $("r-index").textContent = r.index;
+    $("r-signal").textContent = r.core;
+    $("r-base").textContent = r.self;
+    $("r-quote").textContent = t.quote;
+    $("r-decoding").textContent = t.decoding;
+    $("r-truth").textContent = t.truth;
+    var ul = $("r-todo");
+    ul.innerHTML = "";
+    t.todo.forEach(function(x){
+      var li = document.createElement("li");
+      li.textContent = x;
+      ul.appendChild(li);
+    });
+  }
+
+  function finish(){
+    loadingEl.hidden = false;
+    setTimeout(function(){
+      loadingEl.hidden = true;
+      quizEl.hidden = true;
+      renderResult();
+      resultEl.hidden = false;
+      window.scrollTo(0,0);
+    }, 1400);
+  }
+
+  $("btn-start").onclick = function(){
+    coverEl.hidden = true;
+    quizEl.hidden = false;
+    idx = 0;
+    answers = new Array(CONFIG.total).fill(null);
+    renderQ();
+    window.scrollTo(0,0);
+  };
+
+  $("btn-prev").onclick = function(){
+    if(idx > 0){ idx--; renderQ(); window.scrollTo(0,0); }
+  };
+
+  $("btn-restart").onclick = function(){
+    resultEl.hidden = true;
+    coverEl.hidden = false;
+    window.scrollTo(0,0);
+  };
+
+  $("btn-quick").onclick = function(){
+    location.href = CONFIG.quickUrl;
+  };
+
+  $("btn-share").onclick = function(){
+    var r = calc();
+    var t = TYPES[r.key];
+    var text = "「测测你是不是一颗土豆」我的鉴定结果：" + t.emoji + " " + t.name + "，土豆浓度 " + r.index + "/100。来验货 → " + location.href;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){
+        $("btn-share").textContent = "已复制，去粘贴吧";
+        setTimeout(function(){ $("btn-share").textContent = "生成分享文案"; }, 1600);
+      }, function(){
+        prompt("复制这段分享文案：", text);
+      });
+    }else{
+      prompt("复制这段分享文案：", text);
+    }
+  };
+})();
+</script>
+</body>
+</html>
